@@ -1,4 +1,4 @@
-import jwt, { SignOptions } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
@@ -7,6 +7,8 @@ const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d'
 
 // Generate JWT token
 export const generateToken = (userId: string): string => {
+  // Type assertion needed: JWT_EXPIRY can be string from env or default '7d'
+  // TypeScript cannot infer that it matches StringValue template literal type
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRY as any })
 }
 
