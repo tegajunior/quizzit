@@ -37,14 +37,16 @@ export const comparePassword = async (
 }
 
 // Generate email verification token (random 6-digit OTP or 32-char token)
-export const generateVerificationToken = (): {
+export const generateVerificationToken = (
+  expiryMinutes: number = 1440
+): {
   token: string
   expiry: Date
 } => {
   // For OTP: Math.random().toString().slice(2, 8)
   // For token: crypto.randomBytes(32).toString('hex')
   const token = crypto.randomBytes(32).toString('hex')
-  const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+  const expiry = new Date(Date.now() + expiryMinutes * 60 * 1000) // Default 24 hours (1440 minutes)
   return { token, expiry }
 }
 
