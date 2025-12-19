@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
+import Image from 'next/image'
+import Link from 'next/link'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,6 +34,25 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="border-b">
+          <div className="container border-4 border-amber-600 px-4 py-4">
+            <Link
+              href="/"
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity w-fit"
+            >
+              <Image
+                src="/logo.svg"
+                alt="Quizzit Logo"
+                width={40}
+                height={40}
+                priority
+              />
+              <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Quizzit
+              </span>
+            </Link>
+          </div>
+        </header>
         <Providers>{children}</Providers>
       </body>
     </html>

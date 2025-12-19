@@ -1,8 +1,12 @@
 import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
 const EMAIL_USER = process.env.EMAIL_USER
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD
+const RESEND_API_KEY = process.env.RESEND_API_KEY_CH
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+
+const resend = new Resend(RESEND_API_KEY)
 
 // Create transporter - using Gmail as example
 // For production, use your email service (SendGrid, Resend, etc.)
@@ -23,9 +27,9 @@ export interface EmailOptions {
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
   try {
     // Check if email credentials are configured
-    if (!EMAIL_USER || !EMAIL_PASSWORD) {
+    if (!RESEND_API_KEY || !APP_URL) {
       console.warn(
-        '⚠️  Email not configured. Set EMAIL_USER and EMAIL_PASSWORD in .env.local'
+        '⚠️  Email not configured. Set RESEND_API_KEY and APP_URL in .env.local'
       )
       console.log('Email would be sent to:', options.to)
       console.log('Subject:', options.subject)
@@ -33,13 +37,13 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
     }
 
     const mailOptions = {
-      from: `Quizzit <${EMAIL_USER}>`,
+      from: `Quizzit <hello@chidiebereuzoma.dev>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
     }
 
-    await transporter.sendMail(mailOptions)
+    await resend.emails.send(mailOptions)
     console.log(`✅ Email sent to ${options.to}`)
   } catch (error) {
     console.error('❌ Error sending email:', error)
@@ -73,7 +77,7 @@ export const sendVerificationEmail = async (
 
   await sendEmail({
     to: email,
-    subject: '🔐 Verify your Quizzit Email',
+    subject: 'Verify your Quizzit Email',
     html,
   })
 }

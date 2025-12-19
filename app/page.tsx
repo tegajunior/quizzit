@@ -52,8 +52,7 @@ export default function Home() {
           maxW="6xl"
           py="4"
         >
-          <HStack justify="space-between">
-            <Heading size="md">🎯 Quizzit</Heading>
+          <HStack justify="flex-end">
             <HStack gap={4}>
               <NextLink href="/login">
                 <Button
