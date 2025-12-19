@@ -63,11 +63,14 @@ export default function VerifyEmailComponent() {
       setTimeout(() => {
         router.push('/dashboard')
       }, 2000)
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStep('error')
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.error || 'Invalid or expired token'
+        : 'Invalid or expired token'
       toaster.error({
         title: 'Verification Failed',
-        description: error.response?.data?.error || 'Invalid or expired token',
+        description: errorMessage,
       })
     } finally {
       setIsVerifying(false)
