@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Heading,
   Container,
   Link as ChakraLink,
+  HStack,
 } from '@chakra-ui/react'
 import { Field } from '@chakra-ui/react/field'
 import {
@@ -21,18 +22,78 @@ import NextLink from 'next/link'
 import axios from 'axios'
 import { toaster } from '@/lib/toaster'
 
+// Password validation helper
+const validatePassword = (password: string) => {
+  const minLength = password.length >= 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasNumber = /\d/.test(password)
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+
+  return {
+    minLength,
+    hasUppercase,
+    hasNumber,
+    hasSpecialChar,
+    isValid: minLength && hasUppercase && hasNumber && hasSpecialChar,
+  }
+}
+
 export default function RegisterForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     firstName: '',
     lastName: '',
     organizationName: '',
     phone: '',
     role: 'user',
   })
+  const [touched, setTouched] = useState({
+    password: false,
+    confirmPassword: false,
+  })
+
+  // Validate password strength in real-time
+  const passwordValidation = useMemo(
+    () => validatePassword(formData.password),
+    [formData.password]
+  )
+
+  // Check if passwords match
+  const passwordsMatch =
+    formData.password === formData.confirmPassword &&
+    formData.confirmPassword !== ''
+
+  const passwordsDontMatch =
+    touched.confirmPassword &&
+    formData.confirmPassword !== '' &&
+    formData.password !== formData.confirmPassword
+
+  // Check if form is valid for submission
+  const isFormValid = useMemo(() => {
+    const requiredFieldsFilled =
+      formData.firstName.trim() !== '' &&
+      formData.lastName.trim() !== '' &&
+      formData.email.trim() !== '' &&
+      formData.password !== '' &&
+      formData.confirmPassword !== ''
+
+    const passwordsAreValid =
+      passwordValidation.isValid &&
+      formData.password === formData.confirmPassword
+
+    return requiredFieldsFilled && passwordsAreValid
+  }, [
+    formData.firstName,
+    formData.lastName,
+    formData.email,
+    formData.password,
+    formData.confirmPassword,
+    passwordValidation.isValid,
+  ])
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -44,12 +105,40 @@ export default function RegisterForm() {
     }))
   }
 
+  const handleBlur = (field: 'password' | 'confirmPassword') => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Validate password before submission
+    if (!passwordValidation.isValid) {
+      toaster.error({
+        title: 'Weak Password',
+        description: 'Please ensure your password meets all the requirements.',
+      })
+      return
+    }
+
+    // Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      toaster.error({
+        title: "Passwords Don't Match",
+        description: 'Please ensure both passwords are identical.',
+      })
+      return
+    }
+
     setIsLoading(true)
 
     try {
-      const response = await axios.post('/api/auth/register', formData)
+      // Remove confirmPassword before sending to API
+      const { confirmPassword, ...registrationData } = formData
+      const response = await axios.post('/api/auth/register', registrationData)
 
       toaster.success({
         title: 'Registration Successful!',
@@ -143,9 +232,129 @@ export default function RegisterForm() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
+                onBlur={() => handleBlur('password')}
                 placeholder="••••••••"
                 disabled={isLoading}
               />
+              {/* Password strength indicators */}
+              {touched.password && formData.password && (
+                <VStack
+                  gap="1"
+                  align="start"
+                  mt="2"
+                  fontSize="sm"
+                >
+                  <HStack gap="2">
+                    <Text
+                      color={
+                        passwordValidation.minLength ? 'green.500' : 'red.500'
+                      }
+                    >
+                      {passwordValidation.minLength ? '✓' : '✗'}
+                    </Text>
+                    <Text
+                      color={
+                        passwordValidation.minLength
+                          ? 'fg.muted'
+                          : 'fg.emphasized'
+                      }
+                    >
+                      At least 8 characters
+                    </Text>
+                  </HStack>
+                  <HStack gap="2">
+                    <Text
+                      color={
+                        passwordValidation.hasUppercase
+                          ? 'green.500'
+                          : 'red.500'
+                      }
+                    >
+                      {passwordValidation.hasUppercase ? '✓' : '✗'}
+                    </Text>
+                    <Text
+                      color={
+                        passwordValidation.hasUppercase
+                          ? 'fg.muted'
+                          : 'fg.emphasized'
+                      }
+                    >
+                      One uppercase letter
+                    </Text>
+                  </HStack>
+                  <HStack gap="2">
+                    <Text
+                      color={
+                        passwordValidation.hasNumber ? 'green.500' : 'red.500'
+                      }
+                    >
+                      {passwordValidation.hasNumber ? '✓' : '✗'}
+                    </Text>
+                    <Text
+                      color={
+                        passwordValidation.hasNumber
+                          ? 'fg.muted'
+                          : 'fg.emphasized'
+                      }
+                    >
+                      One number
+                    </Text>
+                  </HStack>
+                  <HStack gap="2">
+                    <Text
+                      color={
+                        passwordValidation.hasSpecialChar
+                          ? 'green.500'
+                          : 'red.500'
+                      }
+                    >
+                      {passwordValidation.hasSpecialChar ? '✓' : '✗'}
+                    </Text>
+                    <Text
+                      color={
+                        passwordValidation.hasSpecialChar
+                          ? 'fg.muted'
+                          : 'fg.emphasized'
+                      }
+                    >
+                      One special character (!@#$%^&*...)
+                    </Text>
+                  </HStack>
+                </VStack>
+              )}
+            </Field.Root>
+
+            {/* Confirm Password */}
+            <Field.Root required>
+              <Field.Label>Confirm Password</Field.Label>
+              <Input
+                name="confirmPassword"
+                type="password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                onBlur={() => handleBlur('confirmPassword')}
+                placeholder="••••••••"
+                disabled={isLoading}
+              />
+              {/* Password match indicator */}
+              {passwordsMatch && (
+                <Text
+                  fontSize="sm"
+                  color="green.500"
+                  mt="2"
+                >
+                  ✓ Passwords match
+                </Text>
+              )}
+              {passwordsDontMatch && (
+                <Text
+                  fontSize="sm"
+                  color="red.500"
+                  mt="2"
+                >
+                  ✗ Passwords don&apos;t match
+                </Text>
+              )}
             </Field.Root>
 
             {/* Role Selection */}
@@ -193,10 +402,11 @@ export default function RegisterForm() {
             <Button
               type="submit"
               w="full"
-              colorPalette="blue"
+              colorPalette="green"
               variant="solid"
               loading={isLoading}
               loadingText="Creating Account..."
+              disabled={!isFormValid || isLoading}
             >
               Create Account
             </Button>
@@ -209,7 +419,7 @@ export default function RegisterForm() {
           <ChakraLink
             as={NextLink}
             href="/login"
-            colorPalette="green"
+            colorPalette="blue"
           >
             Log in here
           </ChakraLink>

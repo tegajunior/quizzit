@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Box,
@@ -24,6 +24,11 @@ export default function LoginForm() {
     email: '',
     password: '',
   })
+
+  // Check if form is valid for submission
+  const isFormValid = useMemo(() => {
+    return formData.email.trim() !== '' && formData.password !== ''
+  }, [formData.email, formData.password])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -146,6 +151,7 @@ export default function LoginForm() {
               variant="solid"
               loading={isLoading}
               loadingText="Signing in..."
+              disabled={!isFormValid || isLoading}
             >
               Sign In
             </Button>
