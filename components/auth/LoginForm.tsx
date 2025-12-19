@@ -11,8 +11,11 @@ import {
   Heading,
   Container,
   Link as ChakraLink,
+  IconButton,
+  Group,
 } from '@chakra-ui/react'
 import { Field } from '@chakra-ui/react/field'
+import { InputGroup } from '@chakra-ui/react/input-group'
 import NextLink from 'next/link'
 import axios, { AxiosError } from 'axios'
 import { toaster } from '@/lib/toaster'
@@ -20,6 +23,7 @@ import { toaster } from '@/lib/toaster'
 export default function LoginForm() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -118,14 +122,31 @@ export default function LoginForm() {
             {/* Password */}
             <Field.Root required>
               <Field.Label>Password</Field.Label>
-              <Input
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                disabled={isLoading}
-              />
+              <InputGroup
+                width="full"
+                endElement={
+                  <IconButton
+                    aria-label={
+                      showPassword ? 'Hide password' : 'Show password'
+                    }
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </IconButton>
+                }
+              >
+                <Input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  disabled={isLoading}
+                />
+              </InputGroup>
             </Field.Root>
 
             {/* Forgot Password Link */}
