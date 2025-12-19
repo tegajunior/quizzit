@@ -52,7 +52,7 @@ export default function LoginForm() {
 
       // Redirect to dashboard
       setTimeout(() => {
-        router.push('/dashboard')
+        router.replace('/dashboard')
       }, 500)
     } catch (error: unknown) {
       const axiosError = error as AxiosError<{

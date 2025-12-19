@@ -1,22 +1,8 @@
-import nodemailer from 'nodemailer'
 import { Resend } from 'resend'
-
-const EMAIL_USER = process.env.EMAIL_USER
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD
 const RESEND_API_KEY = process.env.RESEND_API_KEY_CH
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 const resend = new Resend(RESEND_API_KEY)
-
-// Create transporter - using Gmail as example
-// For production, use your email service (SendGrid, Resend, etc.)
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASSWORD,
-  },
-})
 
 export interface EmailOptions {
   to: string
@@ -108,7 +94,6 @@ export const sendOTPEmail = async (
     html,
   })
 }
-
 // Send password reset email
 export const sendPasswordResetEmail = async (
   email: string,
@@ -119,15 +104,16 @@ export const sendPasswordResetEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2>Reset Your Quizzit Password</h2>
+      <h2>Password Reset Request</h2>
       <p>Hi ${userName},</p>
-      <p>We received a request to reset your password. Click the button below to proceed:</p>
-      <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #3182ce; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">
+      <p>We received a request to reset your password for your Quizzit account.</p>
+      <p>Click the button below to reset your password:</p>
+      <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #3182ce; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">
         Reset Password
       </a>
       <p>Or copy this link: <a href="${resetLink}">${resetLink}</a></p>
       <p>This link will expire in 1 hour.</p>
-      <p>If you didn't request a password reset, please ignore this email.</p>
+      <p><strong>If you didn't request a password reset, please ignore this email.</strong> Your password will remain unchanged.</p>
       <hr style="margin-top: 30px; border: none; border-top: 1px solid #ccc;">
       <p style="color: #666; font-size: 12px;">© 2025 Quizzit. All rights reserved.</p>
     </div>
@@ -135,7 +121,7 @@ export const sendPasswordResetEmail = async (
 
   await sendEmail({
     to: email,
-    subject: '🔐 Reset Your Quizzit Password',
+    subject: 'Reset Your Quizzit Password',
     html,
   })
 }
