@@ -82,13 +82,18 @@ export async function POST(request: NextRequest) {
     // Handle Zod validation errors
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.issues[0].message },
+        { error: error.errors[0].message },
         { status: 400 }
       )
     }
 
     // Handle MongoDB duplicate key error
-    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 11000
+    ) {
       return NextResponse.json(
         { error: 'Email already registered' },
         { status: 400 }
