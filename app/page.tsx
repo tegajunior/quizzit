@@ -1,65 +1,322 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  Box,
+  Container,
+  Heading,
+  Text,
+  Button,
+  VStack,
+  HStack,
+  Grid,
+} from '@chakra-ui/react'
+import NextLink from 'next/link'
+import { useAuth } from '@/lib/context/AuthContext'
 
 export default function Home() {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.push('/dashboard')
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading) {
+    return (
+      <Box
+        h="100vh"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text>Loading...</Text>
+      </Box>
+    )
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box>
+      {/* Navigation */}
+      <Box
+        bg="bg.panel"
+        boxShadow="sm"
+        position="sticky"
+        top={0}
+        zIndex={10}
+      >
+        <Container
+          maxW="6xl"
+          py="4"
+        >
+          <HStack justify="space-between">
+            <Heading size="md">🎯 Quizzit</Heading>
+            <HStack gap={4}>
+              <NextLink href="/login">
+                <Button
+                  variant="ghost"
+                  colorPalette="gray"
+                >
+                  Login
+                </Button>
+              </NextLink>
+              <NextLink href="/register">
+                <Button
+                  colorPalette="blue"
+                  variant="solid"
+                >
+                  Sign Up
+                </Button>
+              </NextLink>
+            </HStack>
+          </HStack>
+        </Container>
+      </Box>
+
+      {/* Hero Section */}
+      <Box
+        bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+        color="white"
+        py={{ base: '20', md: '32' }}
+      >
+        <Container maxW="4xl">
+          <VStack
+            gap="8"
+            textAlign="center"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <Heading size="2xl">
+              Create, Manage, and Proctor Online Quizzes Effortlessly
+            </Heading>
+            <Text
+              fontSize="lg"
+              color="fg.subtle"
+            >
+              Quizzit is your complete platform for creating and managing online
+              exams with webcam proctoring, real-time results, and comprehensive
+              analytics.
+            </Text>
+            <HStack gap="4">
+              <NextLink href="/register">
+                <Button
+                  size="lg"
+                  colorPalette="purple"
+                  variant="solid"
+                >
+                  Get Started Free
+                </Button>
+              </NextLink>
+              <Button
+                size="lg"
+                variant="outline"
+                borderColor="white"
+                color="white"
+              >
+                Learn More
+              </Button>
+            </HStack>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* Features Section */}
+      <Container
+        maxW="6xl"
+        py={{ base: '16', md: '24' }}
+      >
+        <VStack gap="16">
+          <VStack
+            gap="4"
+            textAlign="center"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+            <Heading>Why Choose Quizzit?</Heading>
+            <Text
+              color="fg.muted"
+              fontSize="lg"
+            >
+              Everything you need to create, manage, and proctor online
+              assessments
+            </Text>
+          </VStack>
+
+          <Grid
+            templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
+            gap="8"
+            w="full"
+          >
+            {/* Feature 1 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="blue"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                📝 Easy Quiz Creation
+              </Heading>
+              <Text color="fg.muted">
+                Create multiple-choice quizzes with drag-and-drop interface. Set
+                time limits and auto-grading.
+              </Text>
+            </Box>
+
+            {/* Feature 2 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="green"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                🎥 Webcam Proctoring
+              </Heading>
+              <Text color="fg.muted">
+                Prevent cheating with automatic webcam recording. AI-powered
+                proctoring alerts for suspicious behavior.
+              </Text>
+            </Box>
+
+            {/* Feature 3 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="purple"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                📊 Real-time Analytics
+              </Heading>
+              <Text color="fg.muted">
+                Get instant results, detailed analytics, and performance
+                insights. Track student progress in real-time.
+              </Text>
+            </Box>
+
+            {/* Feature 4 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="orange"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                🔐 Secure & Reliable
+              </Heading>
+              <Text color="fg.muted">
+                Enterprise-grade security with encrypted data storage and SSL
+                protection. GDPR compliant.
+              </Text>
+            </Box>
+
+            {/* Feature 5 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="red"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                ⏱️ Timed Assessments
+              </Heading>
+              <Text color="fg.muted">
+                Set custom time limits per question or overall test. Auto-submit
+                when time expires.
+              </Text>
+            </Box>
+
+            {/* Feature 6 */}
+            <Box
+              p="8"
+              layerStyle="fill.subtle"
+              colorPalette="cyan"
+              borderRadius="lg"
+            >
+              <Heading
+                size="md"
+                mb="4"
+              >
+                👥 Student Management
+              </Heading>
+              <Text color="fg.muted">
+                Easily manage student lists, send invite links, and track
+                participation rates.
+              </Text>
+            </Box>
+          </Grid>
+        </VStack>
+      </Container>
+
+      {/* CTA Section */}
+      <Box
+        layerStyle="fill.surface"
+        py={{ base: '16', md: '24' }}
+      >
+        <Container
+          maxW="4xl"
+          textAlign="center"
+        >
+          <VStack gap="8">
+            <Heading>Ready to Get Started?</Heading>
+            <Text
+              color="fg.muted"
+              fontSize="lg"
+            >
+              Join thousands of educators and organizations already using
+              Quizzit
+            </Text>
+            <NextLink href="/register">
+              <Button
+                size="lg"
+                colorPalette="blue"
+                variant="solid"
+              >
+                Sign Up Now
+              </Button>
+            </NextLink>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Box
+        bg="bg.subtle"
+        py="8"
+        borderTopWidth="1"
+        borderColor="bg.panel"
+      >
+        <Container maxW="6xl">
+          <VStack
+            gap="4"
+            align="start"
+          >
+            <Text fontWeight="bold">🎯 Quizzit</Text>
+            <Text
+              color="fg.muted"
+              fontSize="sm"
+            >
+              © 2025 Quizzit. All rights reserved. | Privacy Policy | Terms of
+              Service
+            </Text>
+          </VStack>
+        </Container>
+      </Box>
+    </Box>
+  )
 }
