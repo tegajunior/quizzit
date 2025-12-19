@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt, { SignOptions } from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 
@@ -7,7 +7,7 @@ const JWT_EXPIRY = process.env.JWT_EXPIRY || '7d'
 
 // Generate JWT token
 export const generateToken = (userId: string): string => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRY })
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRY as any })
 }
 
 // Verify JWT token

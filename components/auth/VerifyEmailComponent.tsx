@@ -92,12 +92,12 @@ export default function VerifyEmailComponent() {
       maxW="md"
       py={{ base: '12', md: '24' }}
     >
-      <VStack spacing="8">
+      <VStack gap="8">
         {/* Input Step */}
         {step === 'input' && (
           <>
             <VStack
-              spacing="2"
+              gap="2"
               align="start"
               w="full"
             >
@@ -131,7 +131,7 @@ export default function VerifyEmailComponent() {
                   w="full"
                   colorPalette="blue"
                   variant="solid"
-                  isLoading={isLoading}
+                  loading={isLoading}
                   loadingText="Verifying..."
                 >
                   Verify Email
@@ -143,7 +143,7 @@ export default function VerifyEmailComponent() {
 
         {/* Verifying Step */}
         {step === 'verifying' && (
-          <VStack spacing="4">
+          <VStack gap="4">
             <Spinner
               size="lg"
               colorPalette="blue"
@@ -155,7 +155,7 @@ export default function VerifyEmailComponent() {
         {/* Success Step */}
         {step === 'success' && (
           <VStack
-            spacing="4"
+            gap="4"
             textAlign="center"
           >
             <Heading
@@ -181,7 +181,7 @@ export default function VerifyEmailComponent() {
         {/* Error Step */}
         {step === 'error' && (
           <VStack
-            spacing="4"
+            gap="4"
             textAlign="center"
           >
             <Heading
